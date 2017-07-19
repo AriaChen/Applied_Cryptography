@@ -2,7 +2,6 @@
 
 
 
-
 # 基于网页的用户注册与登录系统
 
 ## 使用https绑定证书到域名
@@ -31,7 +30,7 @@
     Organization Name (eg, company) [Internet Widgits Pty Ltd]:CUC　← 输入公司名
     Organizational Unit Name (eg, section) []:CUC　← 输入组织单位名
     Common Name (eg, YOUR name) []:rachelaria.com　← 输入主机名(想要开启https的主机名)
-    Email Address []:chenaria@qq.com　←输入电子邮箱地址
+    Email Address []:chenaria@qq.com　←输入电子邮箱地址
     ```
 
 * 签署证书
