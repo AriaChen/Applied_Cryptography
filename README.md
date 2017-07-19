@@ -2,6 +2,7 @@
 
 
 
+
 # 基于网页的用户注册与登录系统
 
 ## 使用https绑定证书到域名
@@ -72,7 +73,8 @@
   ```
   SSLEngine on
   SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
-  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key 	     SSLCertificateChainFile /etc/ssl/certs/server-ca.crt
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+  SSLCertificateChainFile /etc/ssl/certs/server-ca.crt
   ```
 
 * 重启Apache
