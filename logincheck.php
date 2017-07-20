@@ -1,4 +1,5 @@
     <?php  
+
         if(isset($_POST["submit"]) && $_POST["submit"] == "登陆")  
         {  
             $user = $_POST["username"];  
@@ -9,25 +10,35 @@
             }  
             else  
             {  
-                $mysqli = new mysqli("localhost", "root", "songyawen", 				"login");  
-               // mysql_query("set names 'gbk'");  
-		//加密比对
 		
-                $sql = "select uname,upasswd from users where uname = '$_POST[username]' and upasswd = '$_POST[password]'";  
-                $result = $mysqli->query($sql);  
-                $num = mysqli_num_rows($result);  
-                if($num)  
-                {  
-                    
+                $mysqli = new mysqli("localhost", "root",$_SERVER['MYSQL_PSW'], "login");  
+               // mysql_query("set names 'gbk'");  
+		
+		
+		//找出对应用户名的加密后的密码
+                $sql = "select upasswd from users where uname = '$_POST[username]'";  		
 
-		     $field_info_arr = $result->fetch_fields();
-			//获取数据
-			while($row = $result->fetch_assoc()){
+                $result = $mysqli->query($sql);  
+
+		$field_info_arr = $result->fetch_fields();
+		while($row = $result->fetch_assoc())
+		{
+			$hash=$row['upasswd'];
+			$res=password_verify($psw,$hash);
+			
+			//echo $res;
+		}
+	
+              //  $num = mysqli_num_rows($result);  
+
+
+                if($res)  
+                {                  
+		        echo $row['uname'];
     			echo "welcome!";
-			echo $row['uname'];
-			}
-		    
-		    
+			
+			
+		    		    
                 }  
                 else  
                 {  
