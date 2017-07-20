@@ -208,7 +208,6 @@
     A challenge password []:（可不填）   #证书请求需要加密存放
     An optional company name []:（可不填）
 
-    openssl req -new -key server.key -out server.csr
     ```
 
 * CA根据请求签署服务器证书
