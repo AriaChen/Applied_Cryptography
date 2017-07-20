@@ -216,7 +216,13 @@
   cp apache.csr /etc/ssl
   cd /etc/ssl
   openssl ca -in apache.csr -out apache.crt
-
+  
+  # 将生成的 crt 证书发回 apache 服务器使用
+  cp  apache.crt /etc/apache2/ssl
+  cd  /etc/apache2/ssl
+  cat  apache.crt
+  cd  /etc/apache2
+  
   注：
   ca : CA 证书相关子命令
   openssl ca 默认使用了-cert cacert.pem -keyfile cakey.pem
