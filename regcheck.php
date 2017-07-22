@@ -110,7 +110,9 @@
 
   			                  if($res_insert)
                           {
-                             echo "<script>alert('注册成功！'); history.go(-1);</script>";
+                            //提示注册成功并返回至登录界面
+                             echo "<script>alert('注册成功！');window.location.href='https://rachelaria.com/login.php'</script>";
+                            
                           }
                           else
                           {
