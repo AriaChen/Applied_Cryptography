@@ -3,6 +3,8 @@
 header('Content-Type: text/plain; charset=utf-8');
 
 include 'Signature.php';
+include 'encode.php';
+include 'decode.php';
 
 session_start();
 
@@ -61,12 +63,21 @@ try {
     $fileHash = sha1_file($_FILES["upload_file"]["tmp_name"]);
     $name = $_FILES['upload_file']['name'];
     $user = $_SESSION['islogin'];
+    $cwd = dirname(__FILE__);
 
     //prevent multiple uploads of the same file
     $filenames = scandir("./upload/");
     foreach($filenames as $fname) {
 	if(strpos($fname,$fileHash)!==false)
        	    throw new RuntimeException("You've already uploaded that file.");   
+    }
+
+   //读取文件内容到变量
+    $file_path = "$cwd/upload/$fileHash.$ext"
+    if(file_exists($file_path))
+    {
+      encode($file_path);
+      //decode($file_path);
     }
 
     create_self_signed($_SESSION['islogin']);
@@ -91,8 +102,7 @@ try {
 	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
     }
 
-    $cwd = dirname(__FILE__);
-    verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+    //verify($file_path,$fileHash,$user);
 
 
     echo 'File is uploaded successfully.';
