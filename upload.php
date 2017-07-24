@@ -73,11 +73,10 @@ try {
     }
 
    //读取文件内容到变量
-    $file_path = "$cwd/upload/$fileHash.$ext"
-    if(file_exists($file_path))
+    if(file_exists($_FILES['upload_file']['tmp_name']))
     {
-      encode($file_path);
-      //decode($file_path);
+      encode($_FILES['upload_file']['tmp_name']);
+      decode($_FILES['upload_file']['tmp_name']);
     }
 
     create_self_signed($_SESSION['islogin']);
@@ -102,7 +101,7 @@ try {
 	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
     }
 
-    //verify($file_path,$fileHash,$user);
+    //verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);
 
 
     echo 'File is uploaded successfully.';
