@@ -9,7 +9,10 @@ include 'decode.php';
 session_start();
 
 try {
-   
+    $baseKey = $_POST["baseKey"];
+    if($baseKey == "" )
+        throw new RuntimeException("<script>alert('请填写分享码！'); history.go(-1);</script>");
+
     if (
         !isset($_FILES['upload_file']['error']) ||
         is_array($_FILES['upload_file']['error'])
@@ -72,13 +75,14 @@ try {
        	    throw new RuntimeException("You've already uploaded that file.");   
     }
 
-   //读取文件内容到变量
+   //加密文件
     if(file_exists($_FILES['upload_file']['tmp_name']))
     {
-      encode($_FILES['upload_file']['tmp_name']);
-      decode($_FILES['upload_file']['tmp_name']);
+      encode($_FILES['upload_file']['tmp_name'],$baseKey);
+      decode($_FILES['upload_file']['tmp_name'],$baseKey);
     }
 
+    //签名
     create_self_signed($_SESSION['islogin']);
     sign($_FILES['upload_file']['tmp_name'],$fileHash,$user);
 
@@ -91,18 +95,28 @@ try {
         throw new RuntimeException('Failed to move uploaded file.');
     }
 
+    //加密对称密钥
+    $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
+    $result = openssl_public_encrypt($baseKey,$cipher_key,$pub_key);
+    //var_dump($result);
+    file_put_contents("$cwd/upload/$fileHash.enc",$cipher_key);
+    //var_dump(bin2hex($cipher_key));
+
     //数据库操作
     $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
     if(!$mysqli)  throw new RuntimeException("数据库连接失败");
     else {
-        $sql_insert = "insert into file (hashFile,user,fileName,ext) values('$fileHash','$user','$name', '$ext')";
+        $sql_insert = "insert into file (hashFile,user,fileName,ext) values('$fileHash','$user','$name','$ext')";
 	//echo $sql_insert;
 	$res_insert = $mysqli->query($sql_insert);
 	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
     }
 
-    //verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+    //解密对称密钥
+   /* $priv_key = openssl_pkey_get_private("file://$cwd/sigKey/$user.key");
+    $result = openssl_private_decrypt(file_get_contents("$cwd/upload/$fileHash.enc"),$basekey,$priv_key);*/
 
+    //verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);//验证签名
 
     echo 'File is uploaded successfully.';
 
