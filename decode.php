@@ -4,7 +4,7 @@
  * @author huangwei
  */
  //接收参数：hex数据+hex iv
- function decode($filepath)
+ function decode($filepath,$key)
  {
    //参数：文件路径
    $fp = fopen($filepath,"r+");
@@ -23,8 +23,6 @@
    //初始向量
    $iv_hex = substr($str,20,$lenthofiv);
 
-   //读取ｋｅｙ
-$key = "this is a secret key";
 //初始向量
 
 
