@@ -1,21 +1,20 @@
 <?php
-function encode($filepath)
+function encode($filepath,$key)
 {
   //接收参数:bin数据
-  //读取ｋｅｙ
+  //读取key
   $fp = fopen($filepath,"r+");
   $input = fread($fp,filesize($filepath));
 
   $strhex = bin2hex($input);
-  echo $strhex;
+
   //明文长度
   //$num=str_pad($num,4,"0",STR_PAD_LEFT);
   $len = strlen($strhex);
-  //长度固定位数２０
+  //长度固定位数20
   $len=str_pad($len,20,"0",STR_PAD_LEFT);
 
-$key   =  "this is a secret key";
-//$input  = "./upload/1.jpg";
+//$input = "./upload/1.jpg";
 //把十六进制字符串转成二进制字符串
 if(!function_exists("hex2bin")) { // PHP 5.4起引入的hex2bin
     function hex2bin($data) {
@@ -35,12 +34,6 @@ $encrypted_data1 = mcrypt_generic($td, $input);
 mcrypt_generic_deinit($td);
 //手动关闭加密模块
 mcrypt_module_close($td);
-echo "</br>";
-echo "初始向量iv:";
-echo "</br>";
-print_r(bin2hex($iv)."\n");
-echo "</br>";
-echo "</br>加密结果（十六进制）:</br>";
 
 //print_r(bin2hex($encrypted_data1)."\n");
 $encrypted_data= bin2hex($len).bin2hex($iv).bin2hex($encrypted_data1);
