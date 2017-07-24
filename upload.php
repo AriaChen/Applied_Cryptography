@@ -1,13 +1,13 @@
-
-
 <?php
 
 header('Content-Type: text/plain; charset=utf-8');
 
+include 'Signature.php';
+
+session_start();
+
 try {
    
-    // Undefined | Multiple Files | $_FILES Corruption Attack
-    // If this request falls under any of them, treat it invalid.
     if (
         !isset($_FILES['upload_file']['error']) ||
         is_array($_FILES['upload_file']['error'])
@@ -42,15 +42,11 @@ try {
             'jpg' => 'image/jpeg',
             'png' => 'image/png',
             'gif' => 'image/gif',
-	    'jpg1' => 'image/jpg',
-	    'jpg2' => 'image/pjpeg',
-            'png1' => 'image/x-png',
             'doc' => 'application/msword',
 	    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 	    'xls' => 'application/vnd.ms-excel',
 	    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	    'pdf' => 'application/pdf',
-	    'pdf1' => 'application/x-pdf',
 	    'ppt' => 'application/vnd.ms-powerpoint',
 	    'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ),
@@ -62,15 +58,42 @@ try {
     // You should name it uniquely.
     // DO NOT USE $_FILES['upfile']['name'] WITHOUT ANY VALIDATION !!
     // On this example, obtain safe unique name from its binary data.
+    $fileHash = sha1_file($_FILES["upload_file"]["tmp_name"]);
+    $name = $_FILES['upload_file']['name'];
+    $user = $_SESSION['islogin'];
+
+    //prevent multiple uploads of the same file
+    $filenames = scandir("./upload/");
+    foreach($filenames as $fname) {
+	if(strpos($fname,$fileHash)!==false)
+       	    throw new RuntimeException("You've already uploaded that file.");   
+    }
+
+    create_self_signed($_SESSION['islogin']);
+    sign($_FILES['upload_file']['tmp_name'],$fileHash,$user);
+
     if (!move_uploaded_file(
         $_FILES['upload_file']['tmp_name'],
         sprintf('./upload/%s.%s',
-            sha1_file($_FILES['upload_file']['tmp_name']),
-            $ext
+            $fileHash,$ext
         )
     )) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
+
+    //数据库操作
+    $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
+    if(!$mysqli)  throw new RuntimeException("数据库连接失败");
+    else {
+        $sql_insert = "insert into file (hashFile,user,fileName,ext) values('$fileHash','$user','$name', '$ext')";
+	//echo $sql_insert;
+	$res_insert = $mysqli->query($sql_insert);
+	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
+    }
+
+    $cwd = dirname(__FILE__);
+    verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+
 
     echo 'File is uploaded successfully.';
 
