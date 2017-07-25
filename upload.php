@@ -90,7 +90,6 @@ try {
     decode("$cwd/upload/$fileHash.$ext",$baseKey);
 
     //签名
-    create_self_signed($_SESSION['islogin']);
     sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
 
 
