@@ -1,5 +1,7 @@
 
  <?php
+
+	include 'Signature.php';
 	header("Content-Type:text/html;charset=utf-8");
         function checkUser($user){
           //if(preg_match('/^[0-9a-zA-Z".chr(0xa1)."-".chr(0xff)."]+$/',$user))//GB2312 汉字字母数字正则表达式
