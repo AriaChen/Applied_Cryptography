@@ -85,13 +85,19 @@ try {
         throw new RuntimeException('Failed to move uploaded file.');
     }
 
+    //加密文件	
     //加密文件
-    encode("$cwd/upload/$fileHash.$ext",$baseKey);
-    decode("$cwd/upload/$fileHash.$ext",$baseKey);
+    $hashname=$fileHash.'.'.$ext;
+    $filepath='/var/www/html/upload/'.$fileHash.'.'.$ext;
 
+     if(file_exists($filepath))
+     {
+       $length = encode($filepath,$baseKey);
+       //$field_info_arr1en = $result1en->fetch_fields();
+     }
     //签名
     create_self_signed($_SESSION['islogin']);
-    sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+    sign($filepath,$fileHash,$user);
 
     //加密对称密钥
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
@@ -104,8 +110,8 @@ try {
     $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
     if(!$mysqli)  throw new RuntimeException("数据库连接失败");
     else {
-        $sql_insert = "insert into file (hashFile,user,fileName,ext) values('$fileHash','$user','$name','$ext')";
-	//echo $sql_insert;
+       $sql_insert = "insert into file (hashFile,user,fileName,ext,len) values('$fileHash','$user','$name','$ext','$length')";
+       //echo $sql_insert;
 	$res_insert = $mysqli->query($sql_insert);
 	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
     }
