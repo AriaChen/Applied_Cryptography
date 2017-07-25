@@ -84,20 +84,15 @@ try {
     )) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
-
-    //加密文件	
+	
     //加密文件
-    $hashname=$fileHash.'.'.$ext;
-    $filepath='/var/www/html/upload/'.$fileHash.'.'.$ext;
+    encode("$cwd/upload/$fileHash.$ext",$baseKey);
+    decode("$cwd/upload/$fileHash.$ext",$baseKey);
 
-     if(file_exists($filepath))
-     {
-       $length = encode($filepath,$baseKey);
-       //$field_info_arr1en = $result1en->fetch_fields();
-     }
     //签名
     create_self_signed($_SESSION['islogin']);
-    sign($filepath,$fileHash,$user);
+    sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+
 
     //加密对称密钥
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
