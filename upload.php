@@ -75,16 +75,6 @@ try {
        	    throw new RuntimeException("You've already uploaded that file.");   
     }
 
-   //加密文件
-    if(file_exists($_FILES['upload_file']['tmp_name']))
-    {
-      encode($_FILES['upload_file']['tmp_name'],$baseKey);
-      decode($_FILES['upload_file']['tmp_name'],$baseKey);
-    }
-
-    //签名
-    create_self_signed($_SESSION['islogin']);
-    sign($_FILES['upload_file']['tmp_name'],$fileHash,$user);
 
     if (!move_uploaded_file(
         $_FILES['upload_file']['tmp_name'],
@@ -94,6 +84,14 @@ try {
     )) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
+
+    //加密文件
+    encode("$cwd/upload/$fileHash.$ext",$baseKey);
+    decode("$cwd/upload/$fileHash.$ext",$baseKey);
+
+    //签名
+    create_self_signed($_SESSION['islogin']);
+    sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
 
     //加密对称密钥
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
