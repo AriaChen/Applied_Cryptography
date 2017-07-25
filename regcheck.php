@@ -110,7 +110,9 @@
 
   			                  if($res_insert)
                           {
-                            //提示注册成功并返回至登录界面
+                            
+			     create_self_signed($_POST[username]);//生成公私钥
+			     //提示注册成功并返回至登录界面
                              echo "<script>alert('注册成功！');window.location.href='https://rachelaria.com/login.php'</script>";
                             
                           }
