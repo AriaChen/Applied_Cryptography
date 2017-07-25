@@ -1,20 +1,15 @@
 <?php
 function encode($filepath,$key)
 {
-  //接收参数:bin数据
-  //读取key
-  $fp = fopen($filepath,"r+");
-  $input = fread($fp,filesize($filepath));
 
+  $input = file_get_contents($filepath);
   $strhex = bin2hex($input);
+  echo '明文hex:';
+  echo $strhex;
+    //明文长度
+    //$num=str_pad($num,4,"0",STR_PAD_LEFT);
+    $len = strlen($strhex);
 
-  //明文长度
-  //$num=str_pad($num,4,"0",STR_PAD_LEFT);
-  $len = strlen($strhex);
-  //长度固定位数20
-  $len=str_pad($len,20,"0",STR_PAD_LEFT);
-
-//$input = "./upload/1.jpg";
 //把十六进制字符串转成二进制字符串
 if(!function_exists("hex2bin")) { // PHP 5.4起引入的hex2bin
     function hex2bin($data) {
@@ -34,13 +29,17 @@ $encrypted_data1 = mcrypt_generic($td, $input);
 mcrypt_generic_deinit($td);
 //手动关闭加密模块
 mcrypt_module_close($td);
-
 //print_r(bin2hex($encrypted_data1)."\n");
-$encrypted_data= bin2hex($len).bin2hex($iv).bin2hex($encrypted_data1);
-
+$encrypted_data= bin2hex($iv).bin2hex($encrypted_data1);
 //加密数据写入文件
-fwrite($fp,$encrypted_data);
-fclose($fp);
 
+echo "encrypted_data";
+echo $encrypted_data;
+
+echo "iv(加密前):";
+echo bin2hex($iv);
+file_put_contents($filepath,$encrypted_data);
+
+return $len;
 }
 ?>
