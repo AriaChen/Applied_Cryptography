@@ -21,7 +21,7 @@ function display(){
 				while($row = $res_select->fetch_assoc())
 		        	{
 					$hash = $row['hashFile'];$ext = $row['ext'];
-					$url = $row['url']; echo $url;
+					$url = $row['url'];
 
 					echo "<h4><a href='";echo $url;echo "'>";
 					echo $row['fileName'];
