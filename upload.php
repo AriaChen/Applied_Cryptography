@@ -3,15 +3,15 @@
 header('Content-Type: text/plain; charset=utf-8');
 
 include 'Signature.php';
-include 'encode.php';
-include 'decode.php';
+include 'symmetric_enc.php';
+include "generateUrl.php";
 
 session_start();
 
 try {
-    $baseKey = $_POST["baseKey"];
+   /* $baseKey = $_POST["baseKey"];
     if($baseKey == "" )
-        throw new RuntimeException("<script>alert('请填写分享码！'); history.go(-1);</script>");
+        throw new RuntimeException("<script>alert('请填写分享码！'); history.go(-1);</script>");*/
 
     if (
         !isset($_FILES['upload_file']['error']) ||
@@ -67,6 +67,7 @@ try {
     $name = $_FILES['upload_file']['name'];
     $user = $_SESSION['islogin'];
     $cwd = dirname(__FILE__);
+    $url = DownloadUrl("$fileHash.$ext",$user);
 
     //prevent multiple uploads of the same file
     $filenames = scandir("./upload/");
@@ -84,28 +85,26 @@ try {
     )) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
-	
+
     //加密文件
-    encode("$cwd/upload/$fileHash.$ext",$baseKey);
-    decode("$cwd/upload/$fileHash.$ext",$baseKey);
+    $baseKey = encode("$cwd/upload/$fileHash.$ext");
+    //decode("$cwd/upload/$fileHash.$ext");
 
     //签名
     sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
 
-
     //加密对称密钥
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
     $result = openssl_public_encrypt($baseKey,$cipher_key,$pub_key);
-    //var_dump($result);
-    file_put_contents("$cwd/upload/$fileHash.enc",$cipher_key);
+    //file_put_contents("$cwd/upload/$fileHash.enc",$cipher_key);
     //var_dump(bin2hex($cipher_key));
-
+					
     //数据库操作
     $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
     if(!$mysqli)  throw new RuntimeException("数据库连接失败");
     else {
-       $sql_insert = "insert into file (hashFile,user,fileName,ext,len) values('$fileHash','$user','$name','$ext','$length')";
-       //echo $sql_insert;
+        $sql_insert = "insert into file (hashFile,user,fileName,ext,url,key) values('$fileHash','$user','$name','$ext','$url','$cipher_key')";
+	echo $sql_insert;
 	$res_insert = $mysqli->query($sql_insert);
 	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
     }
