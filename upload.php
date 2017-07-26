@@ -97,16 +97,19 @@ try {
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
     $result = openssl_public_encrypt($baseKey,$cipher_key,$pub_key);
     //file_put_contents("$cwd/upload/$fileHash.enc",$cipher_key);
-    //var_dump(bin2hex($cipher_key));
+    $cipher_key = bin2hex($cipher_key);
 					
     //数据库操作
     $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
     if(!$mysqli)  throw new RuntimeException("数据库连接失败");
     else {
-        $sql_insert = "insert into file (hashFile,user,fileName,ext,url,key) values('$fileHash','$user','$name','$ext','$url','$cipher_key')";
-	echo $sql_insert;
+        $sql_insert = "INSERT INTO file VALUES('$fileHash','$user','$name','$ext','$url','$cipher_key')";
+	//echo $sql_insert;
 	$res_insert = $mysqli->query($sql_insert);
-	if(!$res_insert) throw new RuntimeException("文件信息存入数据库失败");
+	if(!$res_insert) {
+		$string = $mysqli->error;
+		throw new RuntimeException("$string");
+	}
     }
 
     //解密对称密钥
