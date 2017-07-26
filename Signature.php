@@ -57,14 +57,9 @@
 
     function sign($file,$fileHash,$user){
         //data you want to sign
-
-        if(!is_file($file)) {
-            echo "$file does not exist!\n";
-            exit(1);
-        }
         $data = file_get_contents($file);
         // read private and public key
-        $cwd      = dirname(__FILE__);
+        $cwd = dirname(__FILE__);
 
         $priv_key = openssl_pkey_get_private("file://$cwd/sigKey/$user.key");
 
