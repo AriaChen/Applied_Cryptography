@@ -11,7 +11,7 @@ function display(){
 		$mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
 		if(!$mysqli)  echo "数据库连接失败";
 		else {
-			$sql_select = "SELECT fileName, hashFile, ext FROM file WHERE user LIKE '%$user%'";
+			$sql_select = "SELECT fileName, hashFile, ext, url FROM file WHERE user LIKE '%$user%'";
 			$res_select = $mysqli->query($sql_select);
 			if(!$res_select) echo "查询文件失败";
 			if($num = mysqli_num_rows($res_select) > 0){
@@ -21,16 +21,12 @@ function display(){
 				while($row = $res_select->fetch_assoc())
 		        	{
 					$hash = $row['hashFile'];$ext = $row['ext'];
+					$url = $row['url']; echo $url;
 
-					echo "<h4><a href='/upload/$hash";echo ".";echo $ext;echo "'>";
+					echo "<h4><a href='";echo $url;echo "'>";
 					echo $row['fileName'];
 					echo "</a></h4>";
-					//echo "</br>";
 
-					/*echo "<a href='/upload/$hash";echo ".";echo "dat";echo "'>";
-					echo $row['fileName'];echo "数字签名";
-					echo "</a>";
-					echo "</br>";*/
 		      		}
 			}else{			
 				echo "<h4>无文件</h4>";echo "</br>";
@@ -93,7 +89,7 @@ function display(){
 		<font size = "4">
 		<p>
 		   <label style = "float:left">选择上传文件: <input type="file" name="upload_file" style = "float:right"/></label>
-		   <label style = "float:left">文件分享密码: <input type="password" name="baseKey"/></label>
+		  <!-- <label style = "float:left">文件分享密码: <input type="password" name="baseKey"/></label>-->
 		</p>
 		   <input type="submit" value="上传" class="btn btn-lg btn-default"/><br><br><br>
 		
