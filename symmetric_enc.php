@@ -28,12 +28,12 @@ function decode($filepath,$enc_key,$fileName){
 	}
 	// 解析密文结构，提取解密所需各个字段
 	list($extracted_method, $extracted_enc_options, $extracted_iv, $extracted_ciphertext) = explode('$', $saved_ciphertext); 
-	$decryptedtext = openssl_decrypt($extracted_ciphertext, $extracted_method, $enc_key, $enc_options, hex2bin($extracted_iv));
-	
-	// 计算解密后密文的散列值
-	$decryptedtext_hash = hash('sha256', $decryptedtext);
-	echo "下载文件hash值: "; echo $decryptedtext_hash;
+	$decryptedtext = openssl_decrypt($extracted_ciphertext, $extracted_method, $enc_key, $extracted_enc_options, hex2bin($extracted_iv));
 
 	file_put_contents("./upload/$fileName",$decryptedtext);
+	// 计算解密后密文的散列值
+	$decryptedtext_hash = hash('sha256', $decryptedtext);
+	//echo "下载文件hash值: "; echo $decryptedtext_hash;
+
 }
 ?>
