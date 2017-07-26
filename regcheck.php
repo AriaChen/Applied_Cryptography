@@ -1,6 +1,5 @@
 
  <?php
-
 	include 'Signature.php';
 	header("Content-Type:text/html;charset=utf-8");
         function checkUser($user){
@@ -80,8 +79,7 @@
                   if($psw == $psw_confirm)
                   {
 
-  		            $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
-			mysqli_query("set names 'utf8'");
+  		        $mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
 
       		            if(!$mysqli)  {
                           echo"数据库连接失败";
@@ -103,20 +101,17 @@
   			                   //Message to be hashed.password.
                            $data = $_POST["password"];
                            $enpsw= password_hash ($data, PASSWORD_DEFAULT);
-
+			 
                            $sql_insert =
                           "insert into users (uname,upasswd) values('$_POST[username]','$enpsw')";
-
                           $res_insert = $mysqli->query($sql_insert);
-                          $num_insert = mysqli_num_rows($res_insert);
+                          //$num_insert = mysqli_num_rows($res_insert);
 
   			                  if($res_insert)
                           {
-                            
-			     create_self_signed($_POST[username]);//生成公私钥
-			     //提示注册成功并返回至登录界面
+			     create_self_signed($user);//生成公私钥
+                             //提示注册成功并返回至登录界面
                              echo "<script>alert('注册成功！');window.location.href='https://rachelaria.com/login.php'</script>";
-                            
                           }
                           else
                           {
