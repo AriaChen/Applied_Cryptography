@@ -70,7 +70,7 @@ try {
     $url = DownloadUrl("$fileHash.$ext",$user);
 
     //prevent multiple uploads of the same file
-    $filenames = scandir("./upload/");
+    $filenames = scandir("./upload/$user");
     foreach($filenames as $fname) {
 	if(strpos($fname,$fileHash)!==false)
        	    throw new RuntimeException("You've already uploaded that file.");   
@@ -79,24 +79,22 @@ try {
 
     if (!move_uploaded_file(
         $_FILES['upload_file']['tmp_name'],
-        sprintf('./upload/%s.%s',
-            $fileHash,$ext
+        sprintf('./upload/%s/%s.%s',
+            $user,$fileHash,$ext
         )
     )) {
         throw new RuntimeException('Failed to move uploaded file.');
     }
 
     //加密文件
-    $baseKey = encode("$cwd/upload/$fileHash.$ext",$fileHash);
-    //decode("$cwd/upload/$fileHash.$ext");
+    $baseKey = encode("$cwd/upload/$user/$fileHash.$ext",$fileHash,$user);
 
     //签名
-    sign("$cwd/upload/$fileHash.$ext",$fileHash,$user);
+    sign("$cwd/upload/$user/$fileHash.$ext",$fileHash,$user);
 
     //加密对称密钥
     $pub_key = openssl_pkey_get_public("file:///$cwd/sigKey/$user.crt");
     $result = openssl_public_encrypt($baseKey,$cipher_key,$pub_key);
-    //file_put_contents("$cwd/upload/$fileHash.enc",$cipher_key);
     $cipher_key = bin2hex($cipher_key);
 					
     //数据库操作
@@ -112,13 +110,9 @@ try {
 	}
     }
 
-    //解密对称密钥
-   /* $priv_key = openssl_pkey_get_private("file://$cwd/sigKey/$user.key");
-    $result = openssl_private_decrypt(file_get_contents("$cwd/upload/$fileHash.enc"),$basekey,$priv_key);*/
-
     //verify("$cwd/upload/$fileHash.$ext",$fileHash,$user);//验证签名
 
-    echo 'File is uploaded successfully.';
+    echo "File is uploaded successfully.";
 
 } catch (RuntimeException $e) {
 
