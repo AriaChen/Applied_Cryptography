@@ -1,5 +1,5 @@
 <?php
-function encode($filepath,$filename)
+function encode($filepath,$filename,$user)
 {
 	$plaintext = file_get_contents($filepath);
 
@@ -15,11 +15,11 @@ function encode($filepath,$filename)
 	$saved_ciphertext = sprintf('%s$%d$%s$%s', $method, $enc_options, bin2hex($iv), $ciphertext);
 	
 	file_put_contents($filepath,$saved_ciphertext);
-	file_put_contents("./upload/$filename.txt","Original text sha256: $plaintext_hash".PHP_EOL);
+	file_put_contents("./upload/$user/$filename.txt","Original text sha256: $plaintext_hash".PHP_EOL);
 	return $enc_key;
 }
 
-function decode($filepath,$enc_key,$fileName){
+function decode($filepath,$enc_key,$fileName,$user){
 	$saved_ciphertext = file_get_contents($filepath);
 	// 检查密文格式是否正确、符合我们的定义
 	if(preg_match('/.*$.*$.*$.*/', $saved_ciphertext) !== 1) {
@@ -30,9 +30,9 @@ function decode($filepath,$enc_key,$fileName){
 	list($extracted_method, $extracted_enc_options, $extracted_iv, $extracted_ciphertext) = explode('$', $saved_ciphertext); 
 	$decryptedtext = openssl_decrypt($extracted_ciphertext, $extracted_method, $enc_key, $extracted_enc_options, hex2bin($extracted_iv));
 
-	file_put_contents("./upload/$fileName",$decryptedtext);
+	file_put_contents("./upload/$user/$fileName",$decryptedtext);
 	// 计算解密后密文的散列值
-	$decryptedtext_hash = hash_file('sha256', "./upload/$fileName");
+	$decryptedtext_hash = hash_file('sha256', "./upload/$user/$fileName");
 
 	return $decryptedtext_hash;
 
