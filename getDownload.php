@@ -24,7 +24,7 @@ if(($time-time())<=0){
 		$mysqli = new mysqli("localhost", "root", $_SERVER['MYSQL_PSW'],"login");
 		if(!$mysqli)  echo "数据库连接失败";
 		else {
-			$sql_select = "select * from file where hashFile = '$hash'";
+			$sql_select = "select * from file where hashFile = '$hash' and user = '$user'";
 
 			$res_select = $mysqli->query($sql_select);
 			if(!$res_select) {
@@ -41,7 +41,7 @@ if(($time-time())<=0){
 				$result = openssl_private_decrypt(hex2bin($cipher_key),$baseKey,$priv_key);
 
 				$decryptedtext_hash = decode("./upload/$user/$file",$baseKey,$fileName,$user);
-				file_put_contents("./upload/$user/$hash.txt","Download text sha256: $decryptedtext_hash",FILE_APPEND);
+				file_put_contents("./upload/$user/$hash.txt","Download text sha256: $decryptedtext_hash\n",FILE_APPEND);
 				$filePath = "$cwd/upload/$user/$fileName";	
    
 		   		if (file_exists($filePath)) {
@@ -53,6 +53,7 @@ if(($time-time())<=0){
 				    header('Pragma: public');
 				    header('Content-Length: ' . filesize($filePath));
 				    ob_clean();
+				    //print_r(error_get_last());
             			    flush();
 				    readfile($filePath);
 				} 
