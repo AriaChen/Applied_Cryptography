@@ -87,7 +87,7 @@ try {
     }
 
     //加密文件
-    $baseKey = encode("$cwd/upload/$fileHash.$ext");
+    $baseKey = encode("$cwd/upload/$fileHash.$ext",$fileHash);
     //decode("$cwd/upload/$fileHash.$ext");
 
     //签名
