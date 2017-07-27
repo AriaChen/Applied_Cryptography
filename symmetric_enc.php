@@ -1,10 +1,9 @@
 <?php
-function encode($filepath)
+function encode($filepath,$filename)
 {
 	$plaintext = file_get_contents($filepath);
 
 	$plaintext_hash = hash_file('sha256', $filepath);// 计算原始明文的散列值
-	echo "上传文件hash值: "; echo $plaintext_hash;
 
 	$method = "aes-256-cbc"; // print_r(openssl_get_cipher_methods());
 	$enc_key = bin2hex(openssl_random_pseudo_bytes(32)); // 对称加密秘钥，应妥善保存
@@ -14,8 +13,9 @@ function encode($filepath)
 	$ciphertext = openssl_encrypt($plaintext, $method, $enc_key, $enc_options, $iv);
 	// 定义我们“私有”的密文结构
 	$saved_ciphertext = sprintf('%s$%d$%s$%s', $method, $enc_options, bin2hex($iv), $ciphertext);
-
+	
 	file_put_contents($filepath,$saved_ciphertext);
+	file_put_contents("./upload/$filename.txt","Original text sha256: $plaintext_hash".PHP_EOL);
 	return $enc_key;
 }
 
@@ -32,8 +32,9 @@ function decode($filepath,$enc_key,$fileName){
 
 	file_put_contents("./upload/$fileName",$decryptedtext);
 	// 计算解密后密文的散列值
-	$decryptedtext_hash = hash('sha256', $decryptedtext);
-	//echo "下载文件hash值: "; echo $decryptedtext_hash;
+	$decryptedtext_hash = hash_file('sha256', "./upload/$fileName");
+
+	return $decryptedtext_hash;
 
 }
 ?>
