@@ -103,20 +103,21 @@
                            $enpsw= password_hash ($data, PASSWORD_DEFAULT);
 			 
                            $sql_insert =
-                          "insert into users (uname,upasswd) values('$_POST[username]','$enpsw')";
-                          $res_insert = $mysqli->query($sql_insert);
-                          //$num_insert = mysqli_num_rows($res_insert);
+                           "insert into users (uname,upasswd) values('$_POST[username]','$enpsw')";
+                           $res_insert = $mysqli->query($sql_insert);
+                           //$num_insert = mysqli_num_rows($res_insert);
 
-  			                  if($res_insert)
-                          {
-			     create_self_signed($user);//生成公私钥
-                             //提示注册成功并返回至登录界面
-                             echo "<script>alert('注册成功！');window.location.href='https://rachelaria.com/login.php'</script>";
-                          }
-                          else
-                          {
-                             echo "<script>alert('系统繁忙，请稍候！'); history.go(-1);</script>";
-                          }
+  			   if($res_insert)
+                           {
+			      create_self_signed($user);//生成公私钥
+			      mkdir("./upload/$user");
+                              //提示注册成功并返回至登录界面
+                              echo "<script>alert('注册成功！');window.location.href='https://rachelaria.com/login.php'</script>";
+                           }
+                           else
+                           {
+                              echo "<script>alert('系统繁忙，请稍候！'); history.go(-1);</script>";
+                           }
                       }
 
                     }
