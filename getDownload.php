@@ -35,13 +35,14 @@ if(($time-time())<=0){
 			
 				$row = $res_select->fetch_assoc();
 				$cipher_key = $row['key']; $fileName = $row['fileName'];
+
 				//解密对称密钥
 				$priv_key = openssl_pkey_get_private("file://$cwd/sigKey/$user.key");
 				$result = openssl_private_decrypt(hex2bin($cipher_key),$baseKey,$priv_key);
 
-				decode("$cwd/upload/$file",$baseKey,$fileName);
-
-				$filePath = "$cwd/upload/$fileName";			
+				$decryptedtext_hash = decode("$cwd/upload/$file",$baseKey,$fileName);
+				file_put_contents("./upload/$hash.txt","Download text sha256: $decryptedtext_hash",FILE_APPEND);
+				$filePath = "$cwd/upload/$fileName";	
    
 		   		if (file_exists($filePath)) {
 				    header('Content-Description: File Transfer');
@@ -54,10 +55,10 @@ if(($time-time())<=0){
 				    ob_clean();
             			    flush();
 				    readfile($filePath);
-				    exit;
 				} 
 				//Header ( "Location:https://rachelaria.com/upload/$fileName" ); 
 				unlink("./upload/$fileName"); 
+				
 			}
 		}
 		 
