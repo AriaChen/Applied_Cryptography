@@ -56,9 +56,7 @@ function display(){
       			//3、目录下都会有两个文件，名字为’.'和‘..’，不要对他们进行操作
       				if($filename != "." && $filename != ".."){
           			//4、进行处理
-					echo "<a href='./upload/";
-					echo $filename;
-					echo "'>";
+					echo "<a href='displayFile.php?user=$filename'>";
 					echo $filename;
 					echo "</a>";
 					echo "</br>";
