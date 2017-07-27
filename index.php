@@ -27,19 +27,21 @@ function display(){
 					echo $row['fileName'];
 					echo "</a></h4>";
 
-					echo "<h4><a href='./upload/$hash.txt'>";
+					echo "<h4><a href='./upload/$user/$hash.txt'>";
 					echo "文件散列值";
 					echo "</a></h4>";
-
 
 					echo "</br>";
 
 		      		}
+
 			}else{			
 				echo "<h4>无文件</h4>";echo "</br>";
 			}
 			echo "</br>";
+
 		}
+		
 
 	}
 
@@ -47,24 +49,24 @@ function display(){
 
 		//列出所有文件
 		//1、先打开要操作的目录，并用一个变量指向它
-		//打开当前目录下的目录pic下的子目录common。
-		$handler = opendir('./upload');
+		$dir = './upload';
 		//2、循环的读取目录下的所有文件
-		//其中$filename = readdir($handler)是每次循环的时候将读取的文件名赋值给$filename，为了不陷于死循环，所以还要让$filename !== false。一定要用!==，因为如果某个文件名如果叫’0′，或者某些被系统认为是代表false，用!=就会停止循环*/
-		while( ($filename = readdir($handler)) !== false ) {
-      		//3、目录下都会有两个文件，名字为’.'和‘..’，不要对他们进行操作
-      			if($filename != "." && $filename != ".."){
-          		//4、进行处理
-				echo "<a href='./upload/";
-				echo $filename;
-				echo "'>";
-				echo $filename;
-				echo "</a>";
-				echo "</br>";
-      			}
+		if($handler = opendir($dir)){
+			while( ($filename = readdir($handler)) !== false ) {
+      			//3、目录下都会有两个文件，名字为’.'和‘..’，不要对他们进行操作
+      				if($filename != "." && $filename != ".."){
+          			//4、进行处理
+					echo "<a href='./upload/";
+					echo $filename;
+					echo "'>";
+					echo $filename;
+					echo "</a>";
+					echo "</br>";
+      				}
+			}
+			//5、关闭目录
+			closedir($handler);
 		}
-		//5、关闭目录
-		closedir($handler);
 		echo "</br>";
 		echo "</br>";
 		echo "请开始探索 -> <a href='login.php'>登录</a>" ;
